@@ -1,4 +1,4 @@
-let px = 120, py = 270;
+let px = 140, py = 200;
 let board;
 let velo = 0;
 let status = "walk";
@@ -13,7 +13,12 @@ function setup() {
   for(let i = 0; i < 25; i++) {
     board[14][i] = "block";
   }
+  for(let i = 0; i < 15; i++) {
+    board[i][5] = "block";
+    board[i][24] = "block";
+  }
   board[9][17] = "block";
+  board[7][12] = "block";
 }
 
 function draw() {
@@ -31,7 +36,7 @@ function draw() {
       }
     }
   }
-  if(velo == 0 && checkGround()) status = "walk";
+  if(velo == 0 && bottomCheck()) status = "walk";
   else status = "fly";
   move();
   if(status == "fly") fly();
@@ -39,17 +44,17 @@ function draw() {
 }
 
 function move() {
-    if(keyIsDown(37) && px > 110) {
+    if(keyIsDown(37) && !leftCheck()) {
       px -= 2;
     }
-    else if(keyIsDown(39) && px < 490) {
+    else if(keyIsDown(39) && !rightCheck()) {
       px += 2;
     }
 }
 
 function keyPressed() {
   if(keyCode == 38 && status == "walk") {
-    velo = 8;
+    velo = 7.5;
     status = "fly";
   }
 }
@@ -60,17 +65,25 @@ function fly() {
 }
 
 function fix() {
-  if(py > floor(py / 20) * 20 + 10 && checkGround() && velo < 0) {
+  if(py > floor(py / 20) * 20 + 10 && bottomCheck() && velo < 0) {
     py = floor(py / 20) * 20 + 10;
     status = "walk";
     velo = 0;
   }
 }
 
-function checkGround() {
-  let bottomLeftCell = board[floor(py / 20) + 1][floor((px - 10) / 20)];
-  let bottomRightCell = board[floor(py / 20) + 1][floor((px + 10) / 20)];
-  return (bottomLeftCell == "block" || bottomRightCell == "block");
+function bottomCheck() {
+  let bottomLeftCell = board[floor(py / 20) + 1][floor((px - 8) / 20)];
+  let bottomRightCell = board[floor(py / 20) + 1][floor((px + 8) / 20)];
+  return bottomLeftCell == "block" || bottomRightCell == "block";
+}
+
+function leftCheck() {
+  return board[floor(py / 20)][floor((px - 10) / 20)] == "block";
+}
+
+function rightCheck() {
+  return board[floor(py / 20)][floor((px + 10) / 20)] == "block";
 }
 
 function canvasVal(a) {
